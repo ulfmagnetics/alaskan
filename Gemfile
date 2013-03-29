@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "rails",          "3.2.13"
 gem "mysql2"
-gem "ruby-trello"
+gem "ruby-trello",    :require => "trello"
 gem "dotenv"
 
 gem "rspec-rails",    ">= 2.12.2", :group => [:development, :test]
