@@ -5,7 +5,13 @@ gem "mysql2"
 gem "ruby-trello",    :require => "trello"
 gem "dotenv"
 
-gem "rspec-rails",    ">= 2.12.2", :group => [:development, :test]
+group :test do
+  gem "factory_girl_rails", "~> 4.0"
+end
+
+group :development, :test do
+  gem "rspec-rails",    ">= 2.12.2"
+end
 
 group :assets do
   gem "sass-rails",   "~> 3.2.3"

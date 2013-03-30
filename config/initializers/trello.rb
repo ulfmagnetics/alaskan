@@ -3,8 +3,4 @@ Trello.configure do |config|
   config.member_token = ENV['TRELLO_OAUTH_TOKEN']
 end
 
-Trello.instance_eval do
-  def pipeline_board_id
-    "4e722f28fbeaad21d6017682"
-  end
-end
+PIPELINE_BOARD = Trello::Board.find("4e722f28fbeaad21d6017682")
