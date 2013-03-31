@@ -9,6 +9,16 @@ require 'rspec/rails'
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
+
+  config.use_transactional_fixtures = false
+
+  config.before(:all) do
+    DatabaseCleaner.clean_with :truncation
+  end
+
+  config.after(:all) do
+    DatabaseCleaner.clean_with :truncation
+  end
 end
 
 require 'support/factories'
