@@ -4,8 +4,14 @@ describe Pipeline do
   describe '.build_from_board' do
     let(:board_id) { '12345678abcdef' }
     let(:board_name) { 'Engineering Pipeline' }
-    let(:board_lists) { [ "Recruiter Screen", "Programming Challenge", "Rejected", "Hired" ].map { |name| double('trello_list', :name => name) }}
+    let(:board_list_names) { [ "Recruiter Screen", "Programming Challenge", "Rejected", "Hired" ] }
+    let(:board_lists) { board_list_names.map { |name| double('trello_list', :name => name) }}
     let(:board) { double('board', :id => board_id, :name => board_name, :lists => board_lists) }
+
+    let(:pipeline_states) { double('states') }
+
+    before do
+    end
 
     describe "#final_states" do
       it 'magically identifies states that seem final and returns them'
@@ -20,12 +26,17 @@ describe Pipeline do
         Pipeline.build_from_board(board).should satisfy do |pipeline|
           pipeline.board_id.should == board_id
           pipeline.name.should == board_name
-          # pipeline.states.size.should == board_lists.size
-          # pipeline.states.each { |state| board_lists.should.include? state }
         end
       end
 
-      it 'creates states for each of the board lists'
+      it 'creates states for each of the board lists' do
+        pipeline_states.should_receive(:build).with do |*args|
+          params = args.pop
+          board_list_names.should include(params[:name])
+        end.exactly(board_list_names.size).times
+        Pipeline.any_instance.stub(:states => pipeline_states, :contains_state? => false)
+        Pipeline.build_from_board(board)
+      end
     end
 
     context "when a board is already represented as a Pipeline" do
