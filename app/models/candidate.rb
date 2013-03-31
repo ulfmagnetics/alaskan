@@ -1,18 +1,11 @@
 class Candidate < ActiveRecord::Base
   attr_accessible :current_state, :entry_date, :exit_date, :exit_state, :name, :role
 
-  def self.valid_states
-    @@valid_states ||= [
-      "Bounced", "Recruiter Screen", "Tech Screen",
-      "Programming Challenge", "Review Programming Challenge",
-      "Pairing Test", "Onsite Interview", "Rejected", "Hired"
-    ]
-  end
-
   validates :name, :entry_date, presence: true
-  validates :current_state, inclusion: valid_states
 
   def self.build_from_card(card)
-
+    matches = /(.*?)\s*[\-:,]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
+    entry_date = Date.strptime([matches[1], card.actions.last.date.year].join("/"), "%m/%d/%Y")
+    Candidate.new(entry_date: entry_date, name: matches[2], role: matches[3])
   end
 end

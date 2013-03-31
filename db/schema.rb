@@ -11,9 +11,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130329041719) do
+ActiveRecord::Schema.define(:version => 20130331040646) do
 
   create_table "candidates", :force => true do |t|
+    t.integer  "pipeline_id"
     t.string   "name"
     t.string   "role"
     t.date     "entry_date"
@@ -22,6 +23,14 @@ ActiveRecord::Schema.define(:version => 20130329041719) do
     t.string   "current_state"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "pipelines", :force => true do |t|
+    t.string   "name"
+    t.string   "board_id"
+    t.date     "last_synced_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
 end

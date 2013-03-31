@@ -7,10 +7,12 @@ gem "dotenv"
 
 group :test do
   gem "factory_girl_rails", "~> 4.0"
+  gem "timecop"
 end
 
 group :development, :test do
   gem "rspec-rails",    ">= 2.12.2"
+  gem "jazz_hands"  # opinionated set of pry plugins
 end
 
 group :assets do

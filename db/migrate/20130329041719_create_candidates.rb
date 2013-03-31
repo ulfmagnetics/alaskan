@@ -1,6 +1,7 @@
 class CreateCandidates < ActiveRecord::Migration
   def change
     create_table :candidates do |t|
+      t.integer :pipeline_id
       t.string :name
       t.string :role
       t.date :entry_date
