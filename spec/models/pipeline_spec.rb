@@ -8,15 +8,6 @@ describe Pipeline do
     let(:board_lists) { board_list_names.map { |name| double('trello_list', :name => name) }}
     let(:board) { double('board', :id => board_id, :name => board_name, :lists => board_lists) }
 
-    let(:pipeline_states) { double('states') }
-
-    before do
-    end
-
-    describe "#final_states" do
-      it 'magically identifies states that seem final and returns them'
-    end
-
     context "when board is not represented as a Pipeline" do
       it 'creates a new Pipeline for the board' do
         Pipeline.build_from_board(board).new_record?.should be_true
@@ -30,6 +21,7 @@ describe Pipeline do
       end
 
       it 'creates states for each of the board lists' do
+        pipeline_states = double('states')
         pipeline_states.should_receive(:build).with do |*args|
           params = args.pop
           board_list_names.should include(params[:name])
