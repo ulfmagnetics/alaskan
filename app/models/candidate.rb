@@ -5,19 +5,22 @@ class Candidate < ActiveRecord::Base
 
   validates :card_id, :name, :entry_date, presence: true
 
-  def self.build_from_card(card)
+  def self.build_from_card(card, final_states)
     Candidate.new(card_to_params(card)).tap do |candidate|
-      find_exit_actions(card, candidate.pipeline.final_states).tap do |exit_actions|
+      find_exit_actions(card, final_states).tap do |exit_actions|
         if !exit_actions.empty?
           initial_exit_action = exit_actions.last  # only consider the first time the card entered a final state
           candidate.update_attributes(exit_state: initial_exit_action.data['listBefore']['name'], exit_date: initial_exit_action.date)
         end
       end
     end
+  rescue => ex
+    Rails.logger.error "Caught an exception while building card #{card.name}: #{ex}"
+    nil
   end
 
   def self.card_to_params(card)
-    matches = /(.*?)\s*[\-:,]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
+    matches = /(.*?)\s*[\-:,\s]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
     entry_date = Date.strptime([matches[1], card.actions.last.date.year].join("/"), "%m/%d/%Y")
     {
       card_id: card.id,

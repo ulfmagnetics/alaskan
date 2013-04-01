@@ -10,14 +10,14 @@ describe Candidate do
     let(:card_actions) { [ card_creation_action ] }
     let(:card_list) { double('card_list', :name => "Programming Challenge") }
     let(:card) { double('trello_card', :id => '123456ab', :name => card_name, :list => card_list, :actions => card_actions) }
+    let(:final_states) { %w{ Rejected Hired } }
 
     before do
       Timecop.travel(sometime)
-      Candidate.any_instance.stub_chain(:pipeline, :final_states).and_return(%w{ Rejected Hired })
     end
 
     it 'initializes basic attributes correctly based on card data' do
-      Candidate.build_from_card(card).should satisfy do |candidate|
+      Candidate.build_from_card(card, final_states).should satisfy do |candidate|
         candidate.name.should == "Mina Doroudi"
         candidate.role.should == "Software Engineer"
         candidate.entry_date.year.should == card_creation_date.year
@@ -28,25 +28,38 @@ describe Candidate do
       end
     end
 
+    context 'when card name has a slightly different format' do
+      let(:card_name) { "3/15 Mina Doroudi - Software Engineer" }
+
+      it 'parses attributes correctly' do
+        Candidate.build_from_card(card, final_states).name.should == "Mina Doroudi"
+      end
+    end
+
+    context 'when role is missing' do
+      let(:card_name) { "3/15 Mina Doroudi" }
+      it 'parses attributes correctly'
+    end
+
     context 'when card was created in a different year' do
       let(:card_creation_date) { sometime - 1.year }
 
       it 'generates a valid Candidate who entered the pipeline in the year the card was created' do
-        Candidate.build_from_card(card).entry_date.year.should == card_creation_date.year
+        Candidate.build_from_card(card, final_states).entry_date.year.should == card_creation_date.year
       end
     end
 
     context "when the card's actions contain a transition to the final state" do
       let(:rejection_date) { sometime - 3.days}
       let(:exit_state) { 'Programming Challenge' }
-      let(:final_state) { 'Rejected' }
+      let(:final_state) { final_states.first }
       let(:rejection_action_data) { {'listBefore' => { 'name' => exit_state }, 'listAfter' => { 'name' => final_state } } }
       let(:rejection_action) { double('rejection_action', :type => 'updateCard', :date => rejection_date, :data => rejection_action_data) }
       let(:card_actions) { [ rejection_action, card_creation_action ] }
       let(:card_list) { double('card_list', :name => final_state) }
 
       it 'sets the exit state and exit date correctly' do
-        Candidate.build_from_card(card).should satisfy do |candidate|
+        Candidate.build_from_card(card, final_states).should satisfy do |candidate|
           candidate.exit_state.should == exit_state
           candidate.exit_date.should == rejection_date
         end

@@ -28,7 +28,7 @@ describe Pipeline do
       end
 
       it 'creates states for each of the board lists' do
-        pipeline_states = double('states')
+        pipeline_states = double('states', :final => [])
         pipeline_states.should_receive(:build).with do |*args|
           params = args.pop
           board_list_names.should include(params[:name])
@@ -61,6 +61,10 @@ describe Pipeline do
 
       it 'deletes states that are not represented as lists' # unimplemented functionality
     end
+
+    context "when a start date is provided" do
+      it 'only considers cards that were created after that date'
+    end
   end
 
   describe '#sync_candidate' do
@@ -68,7 +72,7 @@ describe Pipeline do
 
     it 'creates a candidate if they are not yet in the pipeline' do
       card = board_cards.first
-      Candidate.should_receive(:build_from_card).with(card).once.and_return(candidate)
+      Candidate.should_receive(:build_from_card).with(card, []).once.and_return(candidate)
       pipeline.sync_candidate(card)
     end
 

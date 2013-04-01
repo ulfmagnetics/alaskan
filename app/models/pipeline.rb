@@ -10,18 +10,26 @@ class Pipeline < ActiveRecord::Base
 
   def self.build_from_board(board)
     Pipeline.where(board_id: board.id).first_or_initialize.tap do |pipeline|
+      Rails.logger.info "Building pipeline from board #{board.name} [#{board.id}]..."
+
       pipeline.name = board.name
       pipeline.last_synced_at = Time.now
 
+      Rails.logger.info "Lists..."
       board.lists.each do |list|
+        Rails.logger.info "  --> #{list.name}"
         unless pipeline.contains_state?(list.name)
           pipeline.states.build(name: list.name, final: states_that_look_final.include?(list.name))
         end
       end
 
+      Rails.logger.info "Cards..."
       board.cards.each do |card|
+        Rails.logger.info "  --> #{card.name}"
         pipeline.sync_candidate(card)
       end
+
+      Rails.logger.info "... Done."
     end
   end
 
@@ -30,7 +38,9 @@ class Pipeline < ActiveRecord::Base
     if existing_candidate
       existing_candidate.update_from_card(card)
     else
-      candidates << Candidate.build_from_card(card)
+      Candidate.build_from_card(card, final_states).tap do |candidate|
+        candidates << candidate if candidate
+      end
     end
   end
 
