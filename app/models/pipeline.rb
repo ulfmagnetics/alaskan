@@ -12,12 +12,21 @@ class Pipeline < ActiveRecord::Base
     Pipeline.where(board_id: board.id).first_or_initialize.tap do |pipeline|
       pipeline.name = board.name
       pipeline.last_synced_at = Time.now
+
       board.lists.each do |list|
         unless pipeline.contains_state?(list.name)
           pipeline.states.build(name: list.name, final: states_that_look_final.include?(list.name))
         end
       end
+
+      board.cards.each do |card|
+        pipeline.sync_candidate(card)
+      end
     end
+  end
+
+  def sync_candidate(card)
+    candidates << Candidate.build_from_card(card)
   end
 
   def final_states
