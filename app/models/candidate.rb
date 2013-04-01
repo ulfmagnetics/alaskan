@@ -32,7 +32,7 @@ class Candidate < ActiveRecord::Base
   end
 
   def update_from_card(card)
-    update_attributes(card_to_params(card))
+    update_attributes(Candidate.card_to_params(card))
   end
 
   private
