@@ -52,10 +52,7 @@ describe Candidate do
         end
       end
     end
-
   end
-
-  it 'updates itself if the Trello board has changed'
 
   describe '#starting' do
     it 'returns only Candidates who entered the pipeline after the given date'

@@ -26,7 +26,12 @@ class Pipeline < ActiveRecord::Base
   end
 
   def sync_candidate(card)
-    candidates << Candidate.build_from_card(card)
+    existing_candidate = candidates.find_last_by_card_id(card.id)
+    if existing_candidate
+      existing_candidate.update_from_card(card)
+    else
+      candidates << Candidate.build_from_card(card)
+    end
   end
 
   def final_states

@@ -6,17 +6,7 @@ class Candidate < ActiveRecord::Base
   validates :card_id, :name, :entry_date, presence: true
 
   def self.build_from_card(card)
-    matches = /(.*?)\s*[\-:,]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
-    entry_date = Date.strptime([matches[1], card.actions.last.date.year].join("/"), "%m/%d/%Y")
-    params = {
-      card_id: card.id,
-      entry_date: entry_date,
-      name: matches[2],
-      role: matches[3],
-      current_state: card.list.name
-    }
-
-    Candidate.new(params).tap do |candidate|
+    Candidate.new(card_to_params(card)).tap do |candidate|
       find_exit_actions(card, candidate.pipeline.final_states).tap do |exit_actions|
         if !exit_actions.empty?
           initial_exit_action = exit_actions.last  # only consider the first time the card entered a final state
@@ -24,6 +14,22 @@ class Candidate < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def self.card_to_params(card)
+    matches = /(.*?)\s*[\-:,]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
+    entry_date = Date.strptime([matches[1], card.actions.last.date.year].join("/"), "%m/%d/%Y")
+    {
+      card_id: card.id,
+      entry_date: entry_date,
+      name: matches[2],
+      role: matches[3],
+      current_state: card.list.name
+    }
+  end
+
+  def update_from_card(card)
+    update_attributes(card_to_params(card))
   end
 
   private
