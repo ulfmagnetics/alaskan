@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(:version => 20130331220625) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "pipeline_id"
+    t.string   "card_id"
     t.string   "name"
     t.string   "role"
     t.date     "entry_date"
@@ -24,6 +25,8 @@ ActiveRecord::Schema.define(:version => 20130331220625) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "candidates", ["card_id"], :name => "index_candidates_on_card_id"
 
   create_table "pipelines", :force => true do |t|
     t.string   "name"

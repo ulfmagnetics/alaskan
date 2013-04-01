@@ -9,7 +9,7 @@ describe Candidate do
     let(:card_creation_action) { double('card_creation_action', :date => card_creation_date, :data => {}) }
     let(:card_actions) { [ card_creation_action ] }
     let(:card_list) { double('card_list', :name => "Programming Challenge") }
-    let(:card) { double('trello_card', :name => card_name, :list => card_list, :actions => card_actions) }
+    let(:card) { double('trello_card', :id => '123456ab', :name => card_name, :list => card_list, :actions => card_actions) }
 
     before do
       Timecop.travel(sometime)

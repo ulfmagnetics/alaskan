@@ -8,8 +8,9 @@ FactoryGirl.define do
   end
 
   factory :candidate do
-    name { generate :name }
-    entry_date Time.now.to_date
+    card_id     { "%08x" % (rand * 0xffffffff) }
+    name        { generate :name }
+    entry_date  Time.now.to_date
   end
 
   # TODO add any required factories here.

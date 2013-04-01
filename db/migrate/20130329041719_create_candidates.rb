@@ -2,6 +2,7 @@ class CreateCandidates < ActiveRecord::Migration
   def change
     create_table :candidates do |t|
       t.integer :pipeline_id
+      t.string :card_id
       t.string :name
       t.string :role
       t.date :entry_date
@@ -11,5 +12,7 @@ class CreateCandidates < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index :candidates, :card_id
   end
 end

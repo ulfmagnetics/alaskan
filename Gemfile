@@ -12,8 +12,9 @@ group :test do
 end
 
 group :development, :test do
-  gem "rspec-rails",    ">= 2.12.2"
+  gem "faker"
   gem "jazz_hands"  # opinionated set of pry plugins
+  gem "rspec-rails",    ">= 2.12.2"
 end
 
 group :assets do
