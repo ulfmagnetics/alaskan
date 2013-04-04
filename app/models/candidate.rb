@@ -37,7 +37,7 @@ class Candidate < ActiveRecord::Base
   private
 
   def self.calculate_entry_date(card, str)
-    Date.strptime([str, card.actions.last.date.year].join("/"), "%m/%d/%Y")
+    Date.strptime([str.gsub(/[\-:,]/, ""), card.actions.last.date.year].join("/"), "%m/%d/%Y")
   end
 
   def self.find_exit_actions(card, final_states)

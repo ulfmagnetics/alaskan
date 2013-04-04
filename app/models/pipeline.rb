@@ -24,7 +24,7 @@ class Pipeline < ActiveRecord::Base
       end
 
       Rails.logger.info "Cards..."
-      cards = board.cards.slice(ENV['START'].to_i, ENV['LENGTH'].to_i)
+      cards = board.cards.slice((ENV['START'] || 0).to_i, (ENV['LENGTH'] || board.cards.size).to_i)
       cards.each do |card|
         Rails.logger.info "  --> #{card.name}"
         pipeline.sync_candidate(card)
@@ -40,7 +40,11 @@ class Pipeline < ActiveRecord::Base
       existing_candidate.update_from_card(card)
     else
       Candidate.build_from_card(card, final_states).tap do |candidate|
-        candidates << candidate if candidate
+        if candidate && candidate.valid?
+          candidates << candidate
+        else
+          Rails.logger.error "Couldn't build candidate for card: #{card.inspect}"
+        end
       end
     end
   end
