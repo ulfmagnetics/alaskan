@@ -24,7 +24,8 @@ class Pipeline < ActiveRecord::Base
       end
 
       Rails.logger.info "Cards..."
-      board.cards.each do |card|
+      cards = board.cards.slice(ENV['START'].to_i, ENV['LENGTH'].to_i)
+      cards.each do |card|
         Rails.logger.info "  --> #{card.name}"
         pipeline.sync_candidate(card)
       end

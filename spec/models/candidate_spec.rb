@@ -30,15 +30,22 @@ describe Candidate do
 
     context 'when card name has a slightly different format' do
       let(:card_name) { "3/15 Mina Doroudi - Software Engineer" }
-
       it 'parses attributes correctly' do
-        Candidate.build_from_card(card, final_states).name.should == "Mina Doroudi"
+        Candidate.build_from_card(card, final_states).should satisfy do |candidate|
+          candidate.name.should == "Mina Doroudi"
+          candidate.role.should == "Software Engineer"
+        end
       end
     end
 
     context 'when role is missing' do
-      let(:card_name) { "3/15 Mina Doroudi" }
-      it 'parses attributes correctly'
+      let(:card_name) { "3/15 - Mina Doroudi" }
+      it 'parses attributes correctly' do
+        Candidate.build_from_card(card, final_states).should satisfy do |candidate|
+          candidate.name.should == "Mina Doroudi"
+          candidate.role.should be_blank
+        end
+      end
     end
 
     context 'when card was created in a different year' do

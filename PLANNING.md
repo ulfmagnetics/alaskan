@@ -12,6 +12,9 @@ Implementation Steps
 
   - pipeline.candidates.starting(x).ending(y)
 
+* View metrics for a pipeline as text
+
+* Graph metrics for a pipeline
+
 * Display a pipeline in tabular format
 
-* Calculate metrics for a pipeline

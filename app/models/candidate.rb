@@ -20,15 +20,14 @@ class Candidate < ActiveRecord::Base
   end
 
   def self.card_to_params(card)
+    pieces = card.name.split(" ")
     matches = /(.*?)\s*[\-:,\s]\s*(.*?)\s*[\-:,]\s*(.*?)$/.match(card.name)
-    entry_date = Date.strptime([matches[1], card.actions.last.date.year].join("/"), "%m/%d/%Y")
-    {
-      card_id: card.id,
-      entry_date: entry_date,
-      name: matches[2],
-      role: matches[3],
-      current_state: card.list.name
-    }
+    if pieces.size > 4 && matches
+      entry_date, name, role = calculate_entry_date(card, matches[1]), matches[2], matches[3]
+    else
+      entry_date, name, role = calculate_entry_date(card, pieces.shift), pieces.reject { |piece| piece =~ /\s*[\-:,]\s*/ }.join(" "), nil
+    end
+    { card_id: card.id, entry_date: entry_date, name: name, role: role, current_state: card.list.name }
   end
 
   def update_from_card(card)
@@ -36,6 +35,10 @@ class Candidate < ActiveRecord::Base
   end
 
   private
+
+  def self.calculate_entry_date(card, str)
+    Date.strptime([str, card.actions.last.date.year].join("/"), "%m/%d/%Y")
+  end
 
   def self.find_exit_actions(card, final_states)
     card.actions(filter: 'updateCard:idList').select do |action|

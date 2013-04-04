@@ -13,7 +13,11 @@ namespace :alaskan do
       end
 
       pipeline = Pipeline.build_from_board(Trello::Board.find(ENV['BOARD_ID']))
-      pipeline.save!
+      begin
+        pipeline.save!
+      rescue => ex
+        Rails.logger.error "Caught an exception while saving pipeline: #{ex}"
+      end
     end
   end
 end
